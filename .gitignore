@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/src/Jobsity.Chatroom/.vs
+/src/Jobsity.Chatroom/Jobsity.Chatroom.WebApi/bin/Debug/net6.0
+/src/Jobsity.Chatroom/Jobsity.Chatroom.WebApi/obj
+/src/Jobsity.Chatroom/Jobsity.Chatroom.WebApi.Test/bin/Debug/net6.0
+/src/Jobsity.Chatroom/Jobsity.Chatroom.WebApi.Test/obj
