@@ -30,6 +30,12 @@ namespace Jobsity.Chatroom.WebApi.Model
                     Id = Guid.NewGuid(),
                     Name = "user2",
                     Password = "a2FpcUtBUzY1MTEyLTFrbJfLJVJXdqn9noF3GwDzW/kF7QQ8"
+                },
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "botUser",
+                    Password = "a2FpcUtBUzY1MTEyLTFrbJfLJVJXdqn9noF3GwDzW/kF7QQ8"
                 });
 
             modelBuilder.Entity<Chatroom>()

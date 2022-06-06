@@ -2,7 +2,7 @@
 {
     public interface IBotService
     {
-        public Guid SendCommand(string command);
+        public Guid SendCommand(string command, Guid chatroomId);
 
     }
 }

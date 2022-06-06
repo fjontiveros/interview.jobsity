@@ -114,9 +114,8 @@
 
     $('#btnSend').on('click', function () {
         var message = $('#txtMsg').val();
-        var nick = $('#txtNickName').val();
         if (message) {
-            connection.invoke("SendMessage", "C69B9BF2-477C-437D-B1B3-33736CC2123B", message).catch(err => console.error(err.toString()));
+            connection.invoke("SendMessage", $("#txtRoomNo").val(), message).catch(err => console.error(err.toString()));
         }
     });
 

@@ -53,6 +53,7 @@ builder.Services.AddScoped<IChatroomRepository, ChatroomRepository>();
 builder.Services.AddScoped<IChatroomService, ChatroomService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IBotService, BotService>();
+builder.Services.AddScoped<IMessageProducer, RabbitMQProducer>();
 
 var secretBytes = Encoding.UTF8.GetBytes(builder.Configuration["SessionSettings:Secret"]);
 

@@ -8,5 +8,7 @@ namespace Jobsity.Chatroom.WebApi.Services
         public IEnumerable<Model.Chatroom> GetAllChatRooms();
         public Task<Guid> PostMessage(string text, Guid chatroomId);
         IEnumerable<Message> GetLatestMessages(Guid chatroomId);
+        void AddConnection(string connectionId, Guid chatroomId);
+        void RemoveConnection(string connectionId);
     }
 }

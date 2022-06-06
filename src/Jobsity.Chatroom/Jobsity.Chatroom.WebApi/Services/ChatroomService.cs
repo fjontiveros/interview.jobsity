@@ -14,6 +14,7 @@ namespace Jobsity.Chatroom.WebApi.Services
         private readonly ISessionService sessionService;
         private readonly IBotService botService;
         private readonly IHubContext<ChatHub> hubcontext;
+        private static Dictionary<Guid, List<string>> Connections { get; } = new Dictionary<Guid, List<string>>();
 
         public ChatroomService(IChatroomRepository chatroomRepository, 
             IMessageRepository messageRepository,
@@ -61,7 +62,7 @@ namespace Jobsity.Chatroom.WebApi.Services
 
             if (IsACommand(text))
             {
-                return EnqueueCommand(text);
+                return EnqueueCommand(text, chatroomId);
             }
             else
             {
@@ -69,11 +70,19 @@ namespace Jobsity.Chatroom.WebApi.Services
             }
         }
 
-        private Guid EnqueueCommand(string text)
+        public void AddConnection(string connectionId, Guid chatroomId)
+        {
+            if (!Connections.ContainsKey(chatroomId))
+            {
+                Connections[chatroomId] = new List<string>();
+            }
+            Connections[chatroomId].Add(connectionId);
+        }
+
+        private Guid EnqueueCommand(string text, Guid chatroomId)
         {
             var command = new Regex("[^=]*(\\w)*$").Match(text).Value;
-            this.botService.SendCommand(command);
-            return Guid.Empty;
+            return this.botService.SendCommand(command, chatroomId);
         }
 
         private bool IsACommand(string text)
@@ -92,9 +101,17 @@ namespace Jobsity.Chatroom.WebApi.Services
                 User = user
             };
 
-            await hubcontext.Clients.All.SendAsync("ReceiveMessage", sessionService.GetCurrentUser().Name, text);
+            await hubcontext.Clients.Clients(Connections[chatroomId]).SendAsync("ReceiveMessage", sessionService.GetCurrentUser().Name, text);
 
             return messageRepository.PostMessage(message);
+        }
+
+        public void RemoveConnection(string connectionId)
+        {
+            foreach (var chatroom in Connections)
+            {
+                chatroom.Value.Remove(connectionId);
+            }
         }
     }
 }

@@ -10,21 +10,26 @@ namespace Jobsity.Chatroom.WebApi.Hubs
     public class ChatHub : Hub
     {
         private readonly IChatroomService chatroomService;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public ChatHub(IChatroomService chatroomService)
+        public ChatHub(IChatroomService chatroomService,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.chatroomService = chatroomService;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         public override async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "SignalR Users");
+            chatroomService.AddConnection(Context.ConnectionId, Guid.Parse(httpContextAccessor.HttpContext.Request.Query["roomId"].ToString()));
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, "SignalR Users");
+            chatroomService.RemoveConnection(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 
