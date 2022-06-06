@@ -1,6 +1,6 @@
 ﻿using Jobsity.Chatroom.WebApi.Model;
 
-namespace Jobsity.Chatroom.WebApi.Services
+namespace Jobsity.Chatroom.WebApi.Services.Repository
 {
     public class ChatroomRepository : IChatroomRepository
     {
@@ -12,12 +12,12 @@ namespace Jobsity.Chatroom.WebApi.Services
         }
         public IEnumerable<Model.Chatroom> GetAllChatRooms()
         {
-            return this.applicationContext.Chatrooms.ToList();
+            return applicationContext.Chatrooms.ToList();
         }
 
         public Model.Chatroom GetChatroom(Guid chatroomId)
         {
-            return this.applicationContext.Chatrooms.FirstOrDefault(x => x.Id == chatroomId);
+            return applicationContext.Chatrooms.FirstOrDefault(x => x.Id == chatroomId);
         }
     }
 }

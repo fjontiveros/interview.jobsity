@@ -1,4 +1,4 @@
-﻿namespace Jobsity.Chatroom.WebApi.Services
+﻿namespace Jobsity.Chatroom.WebApi.Services.Repository
 {
     public interface IChatroomRepository
     {

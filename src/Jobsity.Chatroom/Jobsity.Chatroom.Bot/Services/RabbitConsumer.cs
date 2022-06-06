@@ -9,15 +9,19 @@ namespace Jobsity.Chatroom.Bot.Services
     public class RabbitConsumer : IRabbitConsumer
     {
         private readonly ICommandProcessor commandProcessor;
+        private readonly IConfiguration configuration;
         private EventingBasicConsumer consumer;
-        public RabbitConsumer(ICommandProcessor commandProcessor)
+        public RabbitConsumer(ICommandProcessor commandProcessor,
+            IConfiguration configuration)
         {
             this.commandProcessor = commandProcessor;
+            this.configuration = configuration;
         }
 
         public void Consume<T>()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost", UserName = "admin", Password = "admin" };
+            var factory = new ConnectionFactory();
+            factory.Uri = new Uri(configuration["RabbitConnectionString"]);
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
             channel.QueueDeclare(typeof(T).Name, true, false, false);

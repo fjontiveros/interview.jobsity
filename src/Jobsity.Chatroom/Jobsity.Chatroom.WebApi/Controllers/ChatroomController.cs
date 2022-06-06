@@ -1,4 +1,4 @@
-using Jobsity.Chatroom.WebApi.Services;
+using Jobsity.Chatroom.WebApi.Services.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jobsity.Chatroom.WebApi.Controllers

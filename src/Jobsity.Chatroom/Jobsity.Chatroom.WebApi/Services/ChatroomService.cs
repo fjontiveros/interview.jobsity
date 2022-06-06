@@ -1,6 +1,7 @@
 ﻿using Jobsity.Chatroom.WebApi.Exceptions;
 using Jobsity.Chatroom.WebApi.Hubs;
 using Jobsity.Chatroom.WebApi.Model;
+using Jobsity.Chatroom.WebApi.Services.Repository;
 using Microsoft.AspNetCore.SignalR;
 using System.Text.RegularExpressions;
 

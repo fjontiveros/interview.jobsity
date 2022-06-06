@@ -8,8 +8,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using System.Web;
 using Jobsity.Chatroom.WebApi.Hubs;
+using Jobsity.Chatroom.WebApi.Services.Repository;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+
+builder.Host.UseNLog();
 
 // Add services to the container.
 

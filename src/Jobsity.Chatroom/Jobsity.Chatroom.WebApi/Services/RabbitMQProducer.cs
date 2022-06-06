@@ -6,11 +6,19 @@ namespace Jobsity.Chatroom.WebApi.Services
 {
     public class RabbitMQProducer : IMessageProducer
     {
+        private readonly IConfiguration configuration;
+
+        public RabbitMQProducer(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         public void SendMessage<T>(T message)
         {
-            var factory = new ConnectionFactory { HostName = "localhost" };
+            var factory = new ConnectionFactory();
+            factory.Uri = new Uri(configuration["RabbitConnectionString"]);
 
-            using(var connection = factory.CreateConnection())
+            using (var connection = factory.CreateConnection())
             using(var channel = connection.CreateModel())
             {
 
