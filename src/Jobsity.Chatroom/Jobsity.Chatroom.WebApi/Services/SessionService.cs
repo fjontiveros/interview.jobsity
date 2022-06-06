@@ -62,7 +62,7 @@ namespace Jobsity.Chatroom.WebApi.Services
 
         public User GetCurrentUser()
         {
-            if (httpContextAccessor.HttpContext.User != null)
+            if (httpContextAccessor.HttpContext.User != null && httpContextAccessor.HttpContext.User.Claims.Any(x => x.Type == "userName"))
             {
                 var loggedUser = httpContextAccessor.HttpContext.User.Claims.First(x => x.Type == "userName").Value;
                 return applicationContext.Users.First(x => x.Name == loggedUser);

@@ -17,9 +17,9 @@ namespace Jobsity.Chatroom.WebApi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Model.Chatroom> Get()
+        public ActionResult Get()
         {
-            return chatroomRepository.GetAllChatRooms();
+            return Ok(chatroomRepository.GetAllChatRooms().Select(x => new { x.Id, x.Name }));
         }
 
         [HttpGet("{id}")]

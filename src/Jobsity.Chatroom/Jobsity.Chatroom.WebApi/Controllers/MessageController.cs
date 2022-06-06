@@ -17,15 +17,15 @@ namespace Jobsity.Chatroom.WebApi.Controllers
         }
 
         [HttpGet("{chatroomId}")]
-        public IEnumerable<Message> Get(Guid chatroomId)
+        public ActionResult Get(Guid chatroomId)
         {
-            return chatroomService.GetLatestMessages(chatroomId);
+            return Ok(chatroomService.GetLatestMessages(chatroomId).Select(x => new { x.Text, x.User.Name, x.TimeStamp }));
         }
 
         [HttpPost("{chatroomId}")]
-        public ActionResult PostMessage(Guid chatroomId, [FromBody] string text)
+        public async Task<ActionResult> PostMessage(Guid chatroomId, [FromBody] string text)
         {
-            return Ok(chatroomService.PostMessage(text, chatroomId));
+            return Ok(await chatroomService.PostMessage(text, chatroomId));
         }
     }
 }

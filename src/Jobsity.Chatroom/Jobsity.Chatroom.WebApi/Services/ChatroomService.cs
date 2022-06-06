@@ -1,5 +1,7 @@
 ﻿using Jobsity.Chatroom.WebApi.Exceptions;
+using Jobsity.Chatroom.WebApi.Hubs;
 using Jobsity.Chatroom.WebApi.Model;
+using Microsoft.AspNetCore.SignalR;
 using System.Text.RegularExpressions;
 
 namespace Jobsity.Chatroom.WebApi.Services
@@ -10,15 +12,20 @@ namespace Jobsity.Chatroom.WebApi.Services
         private readonly IChatroomRepository chatroomRepository;
         private readonly IMessageRepository messageRepository;
         private readonly ISessionService sessionService;
-        private readonly Regex commandRegex = new Regex("[/stock](\\w)+");
+        private readonly IBotService botService;
+        private readonly IHubContext<ChatHub> hubcontext;
 
         public ChatroomService(IChatroomRepository chatroomRepository, 
             IMessageRepository messageRepository,
-            ISessionService sessionService)
+            ISessionService sessionService,
+            IBotService botService,
+            IHubContext<ChatHub> hubcontext)
         {
             this.chatroomRepository = chatroomRepository;
             this.messageRepository = messageRepository;
             this.sessionService = sessionService;
+            this.botService = botService;
+            this.hubcontext = hubcontext;
         }
 
         public IEnumerable<Model.Chatroom> GetAllChatRooms()
@@ -36,7 +43,7 @@ namespace Jobsity.Chatroom.WebApi.Services
             return messageRepository.GetLatestMessages(chatroomId);
         }
 
-        public Guid PostMessage(string text, Guid chatroomId)
+        public async Task<Guid> PostMessage(string text, Guid chatroomId)
         {
             var messageId = Guid.NewGuid();
 
@@ -58,13 +65,14 @@ namespace Jobsity.Chatroom.WebApi.Services
             }
             else
             {
-                return SaveMessage(text, chatroomId, messageId, user);
+                return await SaveMessage(text, chatroomId, messageId, user);
             }
         }
 
         private Guid EnqueueCommand(string text)
         {
             var command = new Regex("[^=]*(\\w)*$").Match(text).Value;
+            this.botService.SendCommand(command);
             return Guid.Empty;
         }
 
@@ -73,7 +81,7 @@ namespace Jobsity.Chatroom.WebApi.Services
             return new Regex("/stock=(\\w)+").IsMatch(text);
         }
 
-        private Guid SaveMessage(string text, Guid chatroomId, Guid messageId, User user)
+        private async Task<Guid> SaveMessage(string text, Guid chatroomId, Guid messageId, User user)
         {
             var message = new Message
             {
@@ -83,6 +91,9 @@ namespace Jobsity.Chatroom.WebApi.Services
                 Chatroom = this.GetChatroom(chatroomId),
                 User = user
             };
+
+            await hubcontext.Clients.All.SendAsync("ReceiveMessage", sessionService.GetCurrentUser().Name, text);
+
             return messageRepository.PostMessage(message);
         }
     }

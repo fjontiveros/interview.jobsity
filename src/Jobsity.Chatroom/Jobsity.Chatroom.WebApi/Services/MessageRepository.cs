@@ -15,7 +15,8 @@ namespace Jobsity.Chatroom.WebApi.Services
             return context.Messages
                             .Where(x => x.Chatroom.Id == chatroomId)
                             .OrderByDescending(x => x.TimeStamp)
-                            .Take(50);
+                            .Take(50)
+                            .ToList();
         }
 
         public Guid PostMessage(Message message)

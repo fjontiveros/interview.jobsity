@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
+using System.Web;
+using Jobsity.Chatroom.WebApi.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +52,7 @@ builder.Services.AddScoped<IChatroomRepository, ChatroomRepository>();
 
 builder.Services.AddScoped<IChatroomService, ChatroomService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
-
+builder.Services.AddScoped<IBotService, BotService>();
 
 var secretBytes = Encoding.UTF8.GetBytes(builder.Configuration["SessionSettings:Secret"]);
 
@@ -89,6 +91,8 @@ builder.Services.AddAuthorization(options =>
     options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -97,6 +101,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseWebSockets();
+
+app.MapHub<ChatHub>("/ws");
+
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 

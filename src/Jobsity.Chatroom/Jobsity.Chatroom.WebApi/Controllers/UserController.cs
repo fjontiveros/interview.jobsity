@@ -1,4 +1,5 @@
-﻿using Jobsity.Chatroom.WebApi.Services;
+﻿using Jobsity.Chatroom.WebApi.Model;
+using Jobsity.Chatroom.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +16,15 @@ namespace Jobsity.Chatroom.WebApi.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Authenticate(string userName, string password)
+        public ActionResult Authenticate(UserModel user)
         {
-            return Ok(sessionService.Authenticate(userName, password));
+            return Ok(sessionService.Authenticate(user.UserName, user.Password));
+        }
+
+        public class UserModel
+        {
+            public string UserName { get; set; }
+            public string Password { get; set; }
         }
     }
 }

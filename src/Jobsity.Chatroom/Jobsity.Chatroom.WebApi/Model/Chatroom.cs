@@ -9,6 +9,5 @@ namespace Jobsity.Chatroom.WebApi.Model
         public string Name { get; set; }
         [Required]
         public DateTime Created { get; set; }
-        public ICollection<Message> Messages { get; set; }
     }
 }

@@ -1,0 +1,133 @@
+﻿<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.5/signalr.min.js" integrity="sha512-Wj6cUe+56vJ4FtfeF4QqPHy4VGO9gZ2iU8GFlLRjawhx1f4sW3BezJLU1ewaZl3bZV8iya0EJOmRY5SD9XTwvw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<div style="margin-bottom:5px;">
+    user: <input type="text" value="" id="txtUserName" />
+    password: <input type="password" value="" id="txtPassword" />
+    <button id="btnLogin">login</button>
+    <input type="hidden" id="token" />
+</div>
+<div id="chatroom" style="margin-bottom:5px;display:none">
+    room no: <select id="txtRoomNo" ></select> <button id="btnJoin">join room</button> <button id="btnLeave" disabled="disabled">leave room</button>
+</div>
+<div id="messageContainer" style="height:300px;width:600px;display:none">
+    <textarea style="height:100%;width:100%" id="msgList"></textarea>
+    <div style="text-align: right">
+        <input type="text" value="" id="txtMsg" /> <button id="btnSend">send</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var server = 'wss://localhost:7134';
+    var api = 'https://localhost:7134/';
+    var WEB_SOCKET = undefined;
+    var connection = undefined;
+
+    $('#btnLogin').on('click', function () {
+        var userName = $('#txtUserName').val();
+        var password = $('#txtPassword').val();
+        if (userName) {
+            var message = {
+                userName: userName,
+                password: password
+            };
+            $.ajax(api + "User", {
+                data: JSON.stringify(message),
+                contentType: 'application/json',
+                type: 'POST'
+            })
+                .done(function (data) {
+                    $("#token").val(data);
+                    $.ajax(api + "Chatroom", {
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Authorization', 'Bearer ' + data);
+                        },
+                        type: 'GET'
+                    })
+                        .done(function (chatrooms) {
+                            chatrooms.forEach((item) => {
+                                $("#txtRoomNo").append($('<option>', {
+                                    value: item.id,
+                                    text: item.name
+                                }))
+                            });
+                            $("#chatroom").show();
+                        });
+
+                    /*
+                    connection = new signalR.HubConnectionBuilder()
+                        .withUrl("/ws?access_token=" + data)
+                        .configureLogging(signalR.LogLevel.Trace)
+                        .build();
+
+                    connection.on("ReceiveMessage", (user, message) => {
+                        if (message) {
+                            var content = $('#msgList').val();
+                            content = content + '\r\n' + message;
+
+                            $('#msgList').val(content);
+                        }
+                    });
+
+                    connection.start().catch(err => console.error(err.toString()));
+                    */
+                });
+        }
+    });
+
+    $('#btnJoin').on('click', function () {
+        var roomNo = $('#txtRoomNo').val();
+        var token = $("#token").val();
+
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl("/ws?access_token=" + token + "&roomId=" + roomNo)
+            .configureLogging(signalR.LogLevel.Trace)
+            .build();
+
+        connection.on("ReceiveMessage", (user, message) => {
+            if (message) {
+                var content = $('#msgList').val();
+                content = content + user + ' - ' + message + '\r\n';
+
+                $('#msgList').val(content);
+            }
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        $("#messageContainer").show();
+        $.ajax(api + "Message/" + roomNo, {
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            },
+            type: 'GET'
+        })
+            .done(function (chatrooms) {
+                $('#msgList').val("");
+                chatrooms.forEach((item) => {
+                    var content = $('#msgList').val();
+                    content = content + item.name + " - " + item.text + '\r\n';
+                    $('#msgList').val(content);
+                });
+            });
+    });
+
+    $('#btnSend').on('click', function () {
+        var message = $('#txtMsg').val();
+        var nick = $('#txtNickName').val();
+        if (message) {
+            connection.invoke("SendMessage", "C69B9BF2-477C-437D-B1B3-33736CC2123B", message).catch(err => console.error(err.toString()));
+        }
+    });
+
+    $('#btnLeave').on('click', function () {
+        var nick = $('#txtNickName').val();
+        var msg = {
+            action: 'leave',
+            msg: '',
+            nick: nick
+        };
+        WEB_SOCKET.send(JSON.stringify(msg));
+    });
+
+</script>

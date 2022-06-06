@@ -12,7 +12,7 @@ namespace Jobsity.Chatroom.WebApi.Services
         }
         public IEnumerable<Model.Chatroom> GetAllChatRooms()
         {
-            return this.applicationContext.Chatrooms;
+            return this.applicationContext.Chatrooms.ToList();
         }
 
         public Model.Chatroom GetChatroom(Guid chatroomId)

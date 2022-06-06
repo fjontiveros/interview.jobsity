@@ -6,7 +6,7 @@ namespace Jobsity.Chatroom.WebApi.Services
     {
         public Model.Chatroom GetChatroom(Guid chatroomId);
         public IEnumerable<Model.Chatroom> GetAllChatRooms();
-        public Guid PostMessage(string text, Guid chatroomId);
+        public Task<Guid> PostMessage(string text, Guid chatroomId);
         IEnumerable<Message> GetLatestMessages(Guid chatroomId);
     }
 }
