@@ -34,7 +34,7 @@ This application is used for chat propose
 
 ## Sites 📌
 ### Test:
-* AgileEngine.ImageGallerySearch in IISExpress
+* Jobsity.Chatroom.WebApi in IISExpress
 	* https://localhost:7134/index.html
 	
 * Users
