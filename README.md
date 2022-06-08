@@ -2,7 +2,9 @@
 
 
 ## Starting 🚀
-This application is used for chat propose
+The goal of this application is to create a simple browser-based chat.
+
+This application should allow several users to talk in a chatroom and also to get stock quotes from an API using a specific command.
 
 ### Pre-requisites 🔧
 #### You need:
